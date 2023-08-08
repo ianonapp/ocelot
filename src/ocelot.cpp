@@ -155,12 +155,15 @@ int main(int argc, char **argv) {
 	sc = new site_comm(conf);
 	sc->verbose_flush = verbose;
 
+	int freeleech = 0;
 	user_list users_list;
 	torrent_list torrents_list;
 	std::vector<std::string> whitelist;
+	db->load_freeleech(freeleech);
 	db->load_users(users_list);
 	db->load_torrents(torrents_list);
 	db->load_whitelist(whitelist);
+
 
 	stats.open_connections = 0;
 	stats.opened_connections = 0;
@@ -177,7 +180,7 @@ int main(int argc, char **argv) {
 	stats.start_time = time(NULL);
 
 	// Create worker object, which handles announces and scrapes and all that jazz
-	work = new worker(conf, torrents_list, users_list, whitelist, db, sc);
+	work = new worker(conf, freeleech, torrents_list, users_list, whitelist, db, sc);
 
 	// Create schedule object
 	sched = new schedule(conf, work, db, sc);

@@ -21,8 +21,8 @@
 #include "user.h"
 
 //---------- Worker - does stuff with input
-worker::worker(config * conf_obj, torrent_list &torrents, user_list &users, std::vector<std::string> &_whitelist, mysql * db_obj, site_comm * sc) :
-	conf(conf_obj), db(db_obj), s_comm(sc), torrents_list(torrents), users_list(users), whitelist(_whitelist), status(OPEN), reaper_active(false)
+worker::worker(config * conf_obj, int freeleech, torrent_list &torrents, user_list &users, std::vector<std::string> &_whitelist, mysql * db_obj, site_comm * sc) :
+	conf(conf_obj), db(db_obj), s_comm(sc), site_freeleech(freeleech), users_list(users), whitelist(_whitelist), status(OPEN), reaper_active(false)
 {
 	logger = spdlog::get("logger");
 	load_config(conf);
@@ -44,9 +44,11 @@ void worker::reload_config(config * conf) {
 
 void worker::reload_lists() {
 	status = PAUSED;
+	db->load_freeleech(site_freeleech);
 	db->load_torrents(torrents_list);
 	db->load_users(users_list);
 	db->load_whitelist(whitelist);
+
 	status = OPEN;
 }
 
@@ -431,7 +433,7 @@ std::string worker::announce(const std::string &input, torrent &tor, user_ptr &u
 				downspeed = downloaded_change / (cur_time - p->last_announced);
 			}
 			auto sit = tor.tokened_users.find(userid);
-			if (tor.free_torrent == NEUTRAL) {
+			if (tor.free_torrent == NEUTRAL || site_freeleech == 1) {
 				downloaded_change = 0;
 				uploaded_change = 0;
 			} else if (tor.free_torrent == FREE || sit != tor.tokened_users.end()) {
@@ -805,6 +807,8 @@ std::string worker::update(params_type &params, client_opts_t &client_opts) {
 			t->free_torrent = NEUTRAL;
 		}
 		logger->info("Added torrent " + std::to_string(t->id) + ". FL: " + std::to_string(t->free_torrent) + " " + params["freetorrent"]);
+	} else if (params["action"] == "update_freeleech") {
+		db->load_freeleech(site_freeleech);
 	} else if (params["action"] == "update_torrent") {
 		std::string info_hash = params["info_hash"];
 		info_hash = hex_decode(info_hash);

@@ -62,6 +62,7 @@ class mysql {
 		mysql(config * conf);
 		void reload_config(config * conf);
 		bool connected();
+		void load_freeleech(int freeleech);
 		void load_torrents(torrent_list &torrents);
 		void load_users(user_list &users);
 		void load_whitelist(std::vector<std::string> &whitelist);
@@ -77,6 +78,7 @@ class mysql {
 
 		bool all_clear();
 
+		std::mutex freeleech_mutex;
 		std::mutex torrent_list_mutex;
 		std::mutex user_list_mutex;
 		std::mutex whitelist_mutex;
