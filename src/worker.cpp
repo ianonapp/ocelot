@@ -22,13 +22,14 @@
 
 //---------- Worker - does stuff with input
 worker::worker(config * conf_obj, int freeleech, torrent_list &torrents, user_list &users, std::vector<std::string> &_whitelist, mysql * db_obj, site_comm * sc) :
-	conf(conf_obj), db(db_obj), s_comm(sc), site_freeleech(freeleech), users_list(users), whitelist(_whitelist), status(OPEN), reaper_active(false)
+	conf(conf_obj), db(db_obj), s_comm(sc), site_freeleech(freeleech), torrents_list(torrents), users_list(users), whitelist(_whitelist), status(OPEN), reaper_active(false)
 {
 	logger = spdlog::get("logger");
 	load_config(conf);
 }
 
 void worker::load_config(config * conf) {
+	site_freeleech = conf->get_uint("site_freeleech");
 	announce_interval = conf->get_uint("announce_interval");
 	del_reason_lifetime = conf->get_uint("del_reason_lifetime");
 	peers_timeout = conf->get_uint("peers_timeout");
