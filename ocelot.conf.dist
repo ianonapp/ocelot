@@ -9,6 +9,7 @@ max_read_buffer     = 4096
 connection_timeout  = 10
 # Keepalive is mostly useful if the tracker runs behind reverse proxies
 keepalive_timeout   = 0
+site_freeleech      = 0
 
 announce_interval   = 1800
 max_request_size    = 4096
