@@ -77,7 +77,7 @@ void mysql::load_freeleech(int freeleech) {
 	mysqlpp::Query query = conn.query("SELECT freeleech FROM site_freeleech");
 	try {
 		mysqlpp::StoreQueryResult res = query.store();
-		std::lock_guard<std::mutex> tl_lock(freeleech_mutex);
+		std::lock_guard<std::mutex> fl_lock(freeleech_mutex);
 		freeleech = res[0][0];
 	} catch (const mysqlpp::BadQuery &er) {
 		logger->error("Query error in load_freeleech: " + std::string(er.what()));

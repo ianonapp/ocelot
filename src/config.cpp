@@ -63,7 +63,6 @@ void config::init() {
 	add("connection_timeout", 10u);
 	add("keepalive_timeout", 0u);
 	add("daemonize", false);
-	add("site_freeleech", 0u);
 
 	// Tracker requests
 	add("announce_interval", 1800u);
