@@ -29,7 +29,6 @@ worker::worker(config * conf_obj, int freeleech, torrent_list &torrents, user_li
 }
 
 void worker::load_config(config * conf) {
-	site_freeleech = conf->get_uint("site_freeleech");
 	announce_interval = conf->get_uint("announce_interval");
 	del_reason_lifetime = conf->get_uint("del_reason_lifetime");
 	peers_timeout = conf->get_uint("peers_timeout");
@@ -434,10 +433,10 @@ std::string worker::announce(const std::string &input, torrent &tor, user_ptr &u
 				downspeed = downloaded_change / (cur_time - p->last_announced);
 			}
 			auto sit = tor.tokened_users.find(userid);
-			if (tor.free_torrent == NEUTRAL || site_freeleech == 1) {
+			if (tor.free_torrent == NEUTRAL) {
 				downloaded_change = 0;
 				uploaded_change = 0;
-			} else if (tor.free_torrent == FREE || sit != tor.tokened_users.end()) {
+			} else if (tor.free_torrent == FREE || sit != tor.tokened_users.end() || site_freeleech == 1) {
 				if (sit != tor.tokened_users.end()) {
 					expire_token = true;
 					std::stringstream record;
